@@ -1,6 +1,4 @@
 import { createEffect, createSignal, type Component } from "solid-js";
-
-import logo from "./logo.svg";
 import styles from "./App.module.css";
 
 async function getPdfBlob() {
@@ -11,17 +9,14 @@ async function getPdfBlob() {
 }
 
 const App: Component = () => {
-  const [pdfUrl, setPdfUrl] = createSignal("about:blank");
-  getPdfBlob();
+  const [pdfData, setPdfData] = createSignal<Blob>();
 
-  async function load() {
+  const pdfUrl = () =>
+    pdfData() ? URL.createObjectURL(pdfData()!) : "about:blank";
+
+  createEffect(async () => {
     const content = await getPdfBlob();
-    const url = URL.createObjectURL(content);
-    setPdfUrl(url);
-  }
-
-  createEffect(() => {
-    load();
+    setPdfData(content);
   });
 
   return (
